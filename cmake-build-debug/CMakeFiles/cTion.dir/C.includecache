@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/Keiss/CLionProjects/cTion/test.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+mysql/mysql.h
+-
+
