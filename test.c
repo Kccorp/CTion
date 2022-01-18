@@ -3,9 +3,11 @@
 #include <string.h>
 #include <mysql/mysql.h>
 
-#define INSERT_USER "INSERT INTO cTion.user (pseudo, mail, pwd) VALUES (?, ?, ?)"
+#define INSERT_USER "INSERT INTO cTion.user (pseudo, pwd) VALUES (?,  ?)"
 
 void err_exit(char* s);
+
+MYSQL_STMT* addUser = NULL;
 
 void connectBD (int *state, MYSQL *conn){
 
@@ -26,13 +28,40 @@ void initPrepareSql (MYSQL *conn){
     int prepare;
     unsigned long count;
 
-    MYSQL_STMT* addUser = mysql_stmt_init(conn);
+    addUser = mysql_stmt_init(conn);
     if (addUser == NULL) err_exit("init stmt failed");
     prepare = mysql_stmt_prepare(addUser, INSERT_USER, strlen(INSERT_USER));
     if (prepare != 0) err_exit("prepare stmt failed");
     count = mysql_stmt_param_count(addUser);
     printf("Il y a %ld parametre dans l'sql preparé\n", count);
 
+}
+
+void insertUser(char* pseudo, char* pwd ){
+    MYSQL_BIND bind[2]; // il y a deux places pseudo et mdp
+
+    unsigned int array_size = 1; /* the number of row to insert? */
+    unsigned long pseudoLen = strlen(pseudo);
+    unsigned long pwdLen = strlen(pwd);
+    int result;
+
+    memset(bind, 0, sizeof(MYSQL_BIND)*2);
+
+    bind[0].buffer_type = MYSQL_TYPE_STRING;
+    bind[0].buffer = pseudo;
+    bind[0].buffer_length = strlen(pseudo);
+    bind[0].length = &pseudoLen;
+
+    bind[1].buffer_type = MYSQL_TYPE_STRING;
+    bind[1].buffer = pwd;
+    bind[1].buffer_length = strlen(pwd);
+    bind[1].length = &pwdLen;
+
+    mysql_stmt_attr_set(addUser, STMT_ATTR_ARRAY_SIZE, &array_size);
+    result = mysql_stmt_bind_param(gInsertPersonStmt, bind);
+    if (result != 0) err_exit("bind stmt insert failed");
+    result = mysql_stmt_execute(gInsertPersonStmt);
+    if (result != 0) err_exit("execute stmt insert failed");
 }
 
 char redColor (char* src){
