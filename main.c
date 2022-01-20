@@ -37,6 +37,7 @@ int main(int argc, char **argv) {
     if (state == 1) {
         char pseudo [25]={0}, pwd[100];
         char checkPwd[100]={0};
+        int id_user;
         int choice;
         int connected = 0;
         initPrepareSql(conn);
@@ -70,9 +71,17 @@ int main(int argc, char **argv) {
             }
 
         } else if (choice == 2) {//Choisir de S'inscrire
-            register_pseudo(pseudo);
+            int uniqueName=0;
 
+            //demande à l'utilisateur ses infos de comtpes et vérifie si un pseudo identique existe déjà
+            do {
+                register_pseudo(pseudo, &uniqueName);
+                //register_password(pwd);
+                verifUser(conn,pseudo, &uniqueName);
+                //printf("\ninqueName : %d", uniqueName);
+            } while (uniqueName != 1);
 
+            //fait l'injection dans la db
 
         } else if (choice == 3) {
             printf("\nGoodbye");

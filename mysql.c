@@ -4,9 +4,11 @@
 
 #define INSERT_USER "INSERT INTO cTion.user (pseudo, pwd) VALUES (?,  ?)"
 #define SELECT_USER "SELECT id_user, pseudo, pwd from user"
+#define CHECK_USER "SELECT pseudo from user"
 
 MYSQL_STMT* addUser = NULL;
 MYSQL_STMT* selectUser = NULL;
+MYSQL_STMT* checkUser = NULL;
 
 void err_exit(char* s);
 
@@ -40,6 +42,11 @@ void initPrepareSql (MYSQL *conn){
     selectUser = mysql_stmt_init(conn);
     if (selectUser == NULL) err_exit("init stmt failed");
     prepare = mysql_stmt_prepare(selectUser, SELECT_USER, strlen(SELECT_USER));
+    if (prepare != 0) err_exit("prepare stmt failed");
+
+    checkUser = mysql_stmt_init(conn);
+    if (checkUser == NULL) err_exit("init stmt failed");
+    prepare = mysql_stmt_prepare(checkUser, CHECK_USER, strlen(CHECK_USER));
     if (prepare != 0) err_exit("prepare stmt failed");
 
 }
@@ -139,6 +146,66 @@ void showUser (MYSQL *conn, char *pseudoSaisie, char *password){
             strcpy(password, strpwd);
             break;
         }
+
+    }
+
+    mysql_free_result(metaData);
+}
+
+void verifUser (MYSQL *conn, char *pseudoSaisie, int *verif){
+    char strPseudo[25];
+    unsigned long int lenName;
+    int result;
+    int row;
+    MYSQL_BIND bind[1]; /*used to get result, not to provide parameters*/
+    MYSQL_FIELD *fields;
+    MYSQL_RES *metaData;
+    my_bool isNull[1];
+
+
+    metaData = mysql_stmt_result_metadata(checkUser);
+    if (metaData == NULL) err_exit("impossible d'obtenir les metadonnées");
+
+    fields = mysql_fetch_fields(metaData);
+    memset(bind,0,sizeof(MYSQL_BIND));
+
+    bind[0].buffer_type = fields[0].type;
+    bind[0].buffer = strPseudo;
+    bind[0].buffer_length = 25;
+    bind[0].is_null = &isNull[0];
+    bind[0].length = &lenName;
+
+
+    result = mysql_stmt_bind_result(checkUser, bind);
+    if (result!=0) err_exit("Le stockage des données à échoué");
+
+    result = mysql_stmt_execute(checkUser);
+    if (result!=0) err_exit("l'éxecution du select à échoué");
+
+    row = 0;
+    while(1){
+
+        result = mysql_stmt_fetch(checkUser);
+
+        if (result != 0 && row == 0){
+            printf("Il y a eu une erreur code:%d\n", result);
+            printf("error str is %s \n", mysql_error(conn));
+            break;
+        }
+
+        strPseudo[lenName]='\0';
+        //printf("ligne %d: pseudo=%s \n", row, strPseudo);
+
+        if (strcmp(pseudoSaisie, strPseudo) == 0){
+            *verif = 2;
+            break;
+        }
+
+        if (result != 0 && row != 0){
+            *verif = 1;
+            break;
+        }
+        row++;
 
     }
 
