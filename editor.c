@@ -1,12 +1,25 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <mysql/mysql.h>
-#include "mysql.c"
-#include "editor.c"
+//
+// Created by Keissy on 19/01/2022.
+//
 
+void redColor (char* src){
+    //printf("\n%s", src);
+    char red [50]="\033[0;31m";
+    strncpy(src, red, 10);
+    //printf("\n%s", src);
+}
 
-void err_exit(char* s);
+void blueColor (char* src){
+    //printf("\n%s", src);
+    char red [50]="\033[0;34m";
+    strncpy(src, red, 10);
+    //printf("\n%s", src);
+}
+
+void reset (char* src){
+    char red [50]="\033[0m";
+    strncpy(src, red, 7);
+}
 
 void parse (char* src){
     int i,j = 0,k = 0;
@@ -71,56 +84,4 @@ void parse (char* src){
 
     printf("\n la phrase est : %s", final);
 
-}
-
-
-int main(int argc, char **argv) {
-
-    char phrase [50];// "Je blue[ suis ] un red[ text  cool ] super" ;
-    int size, i,j;
-
-    int state = 0;
-
-    MYSQL *conn= mysql_init(NULL);/*Create database link pointer*/
-
-    connectBD(&state, conn);
-
-    if (state == 1) {
-        //prepare les requetes
-        initPrepareSql(conn);
-        char pseudo [25], pwd[100];
-
-        printf("\nle pseudo");
-        fgets(pseudo, 50, stdin);
-
-        printf("\nle mdp");
-        fgets(pwd, 50, stdin);
-
-        //suppression \n fin de mot
-        for ( i = 0; i < 100; ++i) {
-            if (i <= 25 && pseudo[i] == '\n'){
-                pseudo[i] = 0;
-            }
-            if (pwd[i] == '\n'){
-                pwd[i] = 0;
-            }
-        }
-
-        insertUser(pseudo, pwd);
-    } else {
-        return 0;
-    }
-
-    /*fgets(phrase, 50, stdin);
-
-    printf("\n%s\n", phrase);
-    parse(phrase);*/
-
-
-}
-
-void err_exit(char* s){
-    perror(s);
-    perror("\n");
-    exit(1);
 }

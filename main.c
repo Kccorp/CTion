@@ -1,44 +1,120 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <mysql/mysql.h>
 #include <string.h>
+#include <mysql/mysql.h>
+#include "mysql.c"
+#include "editor.c"
 
-void extract (char* src, char* dest, int start, int end){
-    int i,j=0;
-    int size = strlen(src);
+void vider_buffer(void){
+    int c;
 
-    //strncpy(dest, src + start, end-start);
-    //dest[end-start] = '\0';
+    do {
+        c = getchar();
+    } while (c != '\n' && c != EOF);
 }
 
-int main() {
+void remove_n(char *chaine, int size){
+    int i;
+    for ( i = 0; i < size; ++i) {
+        if (chaine[i] == '\n'){
+            chaine[i] = 0;
+        }
+    }
+}
+
+int main(int argc, char **argv) {
+
+    char phrase [50];// "Je blue[ suis ] un red[ text  cool ] super" ;
+    int size, i,j;
+
+    int state = 0;
 
     MYSQL *conn= mysql_init(NULL);/*Create database link pointer*/
-    if(conn == NULL) { /*If it returns NULL, the initialization failed*/
-        printf("mysql_init failed!\n");
-        return EXIT_FAILURE;
-    }
-/*The parameters are: conn, the connection handle, that is, the mysql pointer above; host or address where mysql is located, the default is "127.0.0.1";
-user user name, passwd password, database_name database name, these three items are entered according to your own Mysql configuration; the latter are all default and do not need to be modified*/
-    conn=mysql_real_connect(conn,"192.168.50.133","cTion_user","1234","cTion",3306,NULL,0);
-    if (conn) {
-        printf("\033[2;35m");
-        printf("ConnecTion success!\n");
-        printf("\033[0m");
 
-        char name [25] = "Bonjour" ;
-        char result [25];
+    connectBD(&state, conn);
 
-        extract(name, result, 1, 5);
+    if (state == 1) {
+        char pseudo [25]={0}, pwd[100];
+        char checkPwd[100]={0};
+        int choice;
+        short connected = 0;
 
-        //printf("\nresult : %s", result);
+        if (connected == 0){
+            while (choice > 3 || choice <= 0 ){
+                printf("\n1)Se connecter\n2)S'inscrire\n3)Exit\n");
+                scanf("%d", &choice);
+                vider_buffer();
+            }
+            if (choice == 1){//Choisir de se connecter
+                //entrer pseudo
+                do {
+                    printf("\nSe connecter\nPseudo : ");
+                    fgets(pseudo, 25, stdin);
+                    remove_n(pseudo, 25);
+                } while (pseudo[0] == 0);
 
+                //entrer password
+                do {
+                    printf("\nSe connecter\nMot de passe : ");
+                    fgets(pwd, 100, stdin);
+                    remove_n(pwd, 100);
+                } while (pwd[0] == 0);
+
+
+
+            } else if (choice == 2) {
+                //Choisir de S'inscrire
+                printf("le choix 2");
+            } else if (choice == 3) {
+                printf("\nGoodbye");
+                return 0;
+            }
+        }
+        /*
+        //prepare les requetes
+
+
+        //############################
+        printf("\nle pseudo");
+        fgets(pseudo, 50, stdin);
+
+        printf("\nle mdp");
+        fgets(pwd, 50, stdin);
+
+        //suppression \n fin de mot
+        for ( i = 0; i < 100; ++i) {
+            if (i <= 25 && pseudo[i] == '\n'){
+                pseudo[i] = 0;
+            }
+            if (pwd[i] == '\n'){
+                pwd[i] = 0;
+            }
+        }
+        //#############################
+
+        //insertUser(pseudo, pwd);
+        showUser (conn, pseudo, checkPwd);
+
+        //Vérifie si l'utilisateur à rentrée le bon mot de passe
+        if (checkPwd[0] != 0){
+            printf("\nle mot de passe de %s est %s", pseudo, checkPwd);
+            if (strcmp(pwd, checkPwd) == 0){
+                printf("\nle mdp est correct connexion validé");
+            } else {
+                printf("\nle mdp est incorrect connexion refusé");
+            }
+        }*/
+
+    } else {
         return 0;
-
-    }else{
-        printf("Connection failed!\n");
     }
 
+    /*fgets(phrase, 50, stdin);
 
-    return 0;
+    printf("\n%s\n", phrase);
+    parse(phrase);*/
+
+
 }
+
+
