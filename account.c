@@ -29,15 +29,23 @@ void ask_password (char *password){
     } while (password[0] == 0);
 }
 
-int check_password(char *pwd, char *checkPwd, int connected){
+int check_password(char *pwd, char *checkPwd, int *connected){
     if (checkPwd[0] != 0){
         //printf("\nle mot de passe de %s est %s", pseudo, checkPwd);
         if (strcmp(pwd, checkPwd) == 0){
             printf("\nle mdp est correct connexion validé");
-            return connected== 1;
+            return *connected = 1;
         } else {
-            printf("\nle mdp est incorrect connexion refusé");
-            exit(1);
+            printf("\nle mdp est incorrect connexion refusé\n");
         }
     }
+}
+
+void register_pseudo (char *pseudo){
+    do {
+        printf("\nS'inscrire\n\nPseudo : ");
+        fgets(pseudo, 25, stdin);
+        remove_n(pseudo, 25);
+    } while (pseudo[0] == 0 || strlen(pseudo)<4);
+
 }

@@ -38,15 +38,18 @@ int main(int argc, char **argv) {
         char pseudo [25]={0}, pwd[100];
         char checkPwd[100]={0};
         int choice;
-        short connected = 0;
+        int connected = 0;
         initPrepareSql(conn);
 
-        if (connected == 0){
 
-            //choix entre connexion/inscription
-            main_menu(&choice);
+        //choix entre connexion/inscription
+        main_menu(&choice);
 
-            if (choice == 1){//Choisir de se connecter
+        if (choice == 1){//Choisir de se connecter
+
+            //demande à l'utilisateur 3x les identifiants
+            for (i = 0; i < 3; ++i) {
+                if (i > 0)printf("\nIdentifiants incorrect \nVeuillez réessayer");
                 //entrer pseudo
                 ask_pseudo(pseudo);
 
@@ -57,16 +60,25 @@ int main(int argc, char **argv) {
                 showUser (conn, pseudo, checkPwd);
 
                 //Vérifie si l'utilisateur à rentrée le bon mot de passe
-                check_password(pwd, checkPwd, connected);
-
-            } else if (choice == 2) {
-                //Choisir de S'inscrire
-                printf("le choix 2");
-            } else if (choice == 3) {
-                printf("\nGoodbye");
-                return 0;
+                check_password(pwd, checkPwd, &connected);
+                //sort de la boucle si bon identifiants
+                if (connected == 1)break;
+                if (i == 2){
+                    printf("\nConnexion interrompu - arret du programme");
+                    exit(1);
+                }
             }
+
+        } else if (choice == 2) {//Choisir de S'inscrire
+            register_pseudo(pseudo);
+
+
+
+        } else if (choice == 3) {
+            printf("\nGoodbye");
+            return 0;
         }
+
         /*
         //prepare les requetes
 
