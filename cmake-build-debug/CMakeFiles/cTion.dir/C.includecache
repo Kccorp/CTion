@@ -6,6 +6,8 @@
 
 #IncludeRegexTransform: 
 
+/mnt/c/Users/Keiss/CLionProjects/cTion/account.c
+
 /mnt/c/Users/Keiss/CLionProjects/cTion/editor.c
 
 /mnt/c/Users/Keiss/CLionProjects/cTion/main.c
@@ -21,6 +23,8 @@ mysql.c
 /mnt/c/Users/Keiss/CLionProjects/cTion/mysql.c
 editor.c
 /mnt/c/Users/Keiss/CLionProjects/cTion/editor.c
+account.c
+/mnt/c/Users/Keiss/CLionProjects/cTion/account.c
 
 /mnt/c/Users/Keiss/CLionProjects/cTion/mysql.c
 

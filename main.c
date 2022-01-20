@@ -4,6 +4,7 @@
 #include <mysql/mysql.h>
 #include "mysql.c"
 #include "editor.c"
+#include "account.c"
 
 void vider_buffer(void){
     int c;
@@ -38,29 +39,25 @@ int main(int argc, char **argv) {
         char checkPwd[100]={0};
         int choice;
         short connected = 0;
+        initPrepareSql(conn);
 
         if (connected == 0){
-            while (choice > 3 || choice <= 0 ){
-                printf("\n1)Se connecter\n2)S'inscrire\n3)Exit\n");
-                scanf("%d", &choice);
-                vider_buffer();
-            }
+
+            //choix entre connexion/inscription
+            main_menu(&choice);
+
             if (choice == 1){//Choisir de se connecter
                 //entrer pseudo
-                do {
-                    printf("\nSe connecter\nPseudo : ");
-                    fgets(pseudo, 25, stdin);
-                    remove_n(pseudo, 25);
-                } while (pseudo[0] == 0);
+                ask_pseudo(pseudo);
 
                 //entrer password
-                do {
-                    printf("\nSe connecter\nMot de passe : ");
-                    fgets(pwd, 100, stdin);
-                    remove_n(pwd, 100);
-                } while (pwd[0] == 0);
+                ask_password(pwd);
 
+                //Récupere les utilisateurs
+                showUser (conn, pseudo, checkPwd);
 
+                //Vérifie si l'utilisateur à rentrée le bon mot de passe
+                check_password(pwd, checkPwd, connected);
 
             } else if (choice == 2) {
                 //Choisir de S'inscrire
@@ -106,7 +103,7 @@ int main(int argc, char **argv) {
         }*/
 
     } else {
-        return 0;
+        return 1;
     }
 
     /*fgets(phrase, 50, stdin);

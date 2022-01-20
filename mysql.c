@@ -71,7 +71,8 @@ void insertUser(char* pseudo, char* pwd ){
     if (result != 0) err_exit("execute stmt insert failed");
 }
 
-void showUser (MYSQL *conn, char *pseudoSaisi, char *password){
+void showUser (MYSQL *conn, char *pseudoSaisie, char *password){
+
     char strPseudo[100];
     char strpwd[100];
     unsigned long int lenName;
@@ -83,6 +84,8 @@ void showUser (MYSQL *conn, char *pseudoSaisi, char *password){
     MYSQL_FIELD *fields;
     MYSQL_RES *metaData;
     my_bool isNull[3];
+
+
 
     metaData = mysql_stmt_result_metadata(selectUser);
     if (metaData == NULL) err_exit("impossible d'obtenir les metadonnées");
@@ -129,10 +132,10 @@ void showUser (MYSQL *conn, char *pseudoSaisi, char *password){
 
         strPseudo[lenName]='\0';
         strpwd[lenpwd]='\0';
-        printf("ligne %d: id=%d pseudo=%s password=%s\n", row, id, strPseudo, strpwd);
+        //printf("ligne %d: id=%d pseudo=%s password=%s\n", row, id, strPseudo, strpwd);
 
-        if (strcmp(pseudoSaisi, strPseudo) == 0){
-            printf("\nUn compte existe");
+        if (strcmp(pseudoSaisie, strPseudo) == 0){
+            //printf("\nUn compte existe");
             strcpy(password, strpwd);
             break;
         }
