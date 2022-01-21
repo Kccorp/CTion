@@ -7,11 +7,12 @@
 #include "account.c"
 
 void vider_buffer(void){
-    int c;
+    /*int c;
 
     do {
         c = getchar();
-    } while (c != '\n' && c != EOF);
+    } while (c != '\n' && c != EOF);*/
+    fflush(stdin);
 }
 
 void remove_n(char *chaine, int size){
@@ -76,12 +77,14 @@ int main(int argc, char **argv) {
             //demande à l'utilisateur ses infos de comtpes et vérifie si un pseudo identique existe déjà
             do {
                 register_pseudo(pseudo, &uniqueName);
-                //register_password(pwd);
+                register_password(pwd);
                 verifUser(conn,pseudo, &uniqueName);
-                //printf("\ninqueName : %d", uniqueName);
             } while (uniqueName != 1);
 
             //fait l'injection dans la db
+            insertUser(pseudo, pwd);
+            connected = 1;
+            printf("Inscription validée - vous êtes connecté");
 
         } else if (choice == 3) {
             printf("\nGoodbye");
@@ -122,7 +125,8 @@ int main(int argc, char **argv) {
                 printf("\nle mdp est incorrect connexion refusé");
             }
         }*/
-
+        closePreparedStatements();
+        closeDb(conn);
     } else {
         return 1;
     }

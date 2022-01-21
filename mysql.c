@@ -2,7 +2,7 @@
 // Created by Keissy on 19/01/2022.
 //
 
-#define INSERT_USER "INSERT INTO cTion.user (pseudo, pwd) VALUES (?,  ?)"
+#define INSERT_USER "INSERT INTO wbz6ulqh7s5afptp.user (pseudo, pwd) VALUES (?,  ?)"
 #define SELECT_USER "SELECT id_user, pseudo, pwd from user"
 #define CHECK_USER "SELECT pseudo from user"
 
@@ -17,7 +17,8 @@ void connectBD (int *state, MYSQL *conn){
     if(conn == NULL) { /*If it returns NULL, the initialization failed*/
         printf("mysql_init failed!\n");
     }
-    conn=mysql_real_connect(conn,"192.168.50.133","cTion_user","1234","cTion",3306,NULL,0);
+    //conn=mysql_real_connect(conn,"192.168.50.133","cTion_user","1234","cTion",3306,NULL,0);
+    conn=mysql_real_connect(conn,"n2o93bb1bwmn0zle.chr7pe7iynqr.eu-west-1.rds.amazonaws.com","pz51cw591tewd1lp","n78bgxgqf4u510mu","wbz6ulqh7s5afptp",3306,NULL,0);
     if (conn) {
 
         printf("\033[0;34mConnection success! \033[0m\n");
@@ -187,6 +188,7 @@ void verifUser (MYSQL *conn, char *pseudoSaisie, int *verif){
 
         result = mysql_stmt_fetch(checkUser);
 
+
         if (result != 0 && row == 0){
             printf("Il y a eu une erreur code:%d\n", result);
             printf("error str is %s \n", mysql_error(conn));
@@ -210,6 +212,17 @@ void verifUser (MYSQL *conn, char *pseudoSaisie, int *verif){
     }
 
     mysql_free_result(metaData);
+}
+
+
+void closePreparedStatements(){
+    mysql_stmt_close(addUser);
+    mysql_stmt_close(selectUser);
+    mysql_stmt_close(checkUser);
+}
+
+void closeDb(MYSQL* dbconn){
+    mysql_close(dbconn);
 }
 
 void err_exit(char* s){
