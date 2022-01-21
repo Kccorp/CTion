@@ -78,7 +78,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/mnt/c/Users/Keiss/CLionProjects/cTion/test.c">
+		<Unit filename="/mnt/c/Users/Keiss/CLionProjects/cTion/main.c">
 			<Option target="cTion"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/Keiss/CLionProjects/cTion/CMakeLists.txt">

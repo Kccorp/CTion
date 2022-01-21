@@ -1,1 +1,1 @@
-/usr/bin/cc -O3 -DNDEBUG   CMakeFiles/cTion.dir/test.c.o  -o cTion -lmysqlclient -lgraph 
+/usr/bin/cc -O3 -DNDEBUG   CMakeFiles/cTion.dir/main.c.o  -o cTion -lmysqlclient -lgraph 

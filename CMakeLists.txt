@@ -4,7 +4,7 @@ project(cTion C)
 set(CMAKE_C_STANDARD 99)
 
 
-add_executable(cTion test.c)
+add_executable(cTion main.c)
 
 target_link_libraries(cTion libmysqlclient.so)
 target_link_libraries(cTion libgraph.so)

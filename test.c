@@ -2,65 +2,27 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mysql/mysql.h>
+#include "mysql.c"
+#include "editor.c"
 
-#define INSERT_USER "INSERT INTO cTion.user (pseudo, mail, pwd) VALUES (?, ?, ?)"
 
 void err_exit(char* s);
 
-void connectBD (int *state, MYSQL *conn){
-
-    if(conn == NULL) { /*If it returns NULL, the initialization failed*/
-        printf("mysql_init failed!\n");
-    }
-    conn=mysql_real_connect(conn,"192.168.50.133","cTion_user","1234","cTion",3306,NULL,0);
-    if (conn) {
-        printf("Connection success!\n");
-        *state = 1;
-    }else{
-        printf("Connection failed!\n");
-        *state = 0;
+void remove_n(char *chaine, int size){
+    int i;
+    for ( i = 0; i < size; ++i) {
+        if (chaine[i] == '\n'){
+            chaine[i] = 0;
+        }
     }
 }
-
-void initPrepareSql (MYSQL *conn){
-    int prepare;
-    unsigned long count;
-
-    MYSQL_STMT* addUser = mysql_stmt_init(conn);
-    if (addUser == NULL) err_exit("init stmt failed");
-    prepare = mysql_stmt_prepare(addUser, INSERT_USER, strlen(INSERT_USER));
-    if (prepare != 0) err_exit("prepare stmt failed");
-    count = mysql_stmt_param_count(addUser);
-    printf("Il y a %ld parametre dans l'sql preparé\n", count);
-
-}
-
-char redColor (char* src){
-    //printf("\n%s", src);
-    char red [50]="\033[0;31m";
-    strncpy(src, red, 10);
-    //printf("\n%s", src);
-}
-
-char blueColor (char* src){
-    //printf("\n%s", src);
-    char red [50]="\033[0;34m";
-    strncpy(src, red, 10);
-    //printf("\n%s", src);
-}
-
-char reset (char* src){
-    char red [50]="\033[0m";
-    strncpy(src, red, 7);
-}
-
-char parse (char* src){
+void parse (char* src){
     int i,j = 0,k = 0;
     int size = strlen(src);
     char result [50][50] = {0};
     char final [150] = {0};
 
-
+    remove_n(src, 25);
     /*for (int i = 0; i < 50; ++i) {
         for (int j = 0; j < 50; ++j) {
             result[i][j] = 0;
@@ -109,7 +71,7 @@ char parse (char* src){
     int last;
     for ( i = 0; i < 50; ++i) {
         if (result[i][0] != 0){
-             strcat(final,result[i]);
+            strcat(final,result[i]);
             last = strlen(final);
             final[last] = 32;
         }
@@ -126,12 +88,35 @@ int main(int argc, char **argv) {
     int size, i,j;
 
     int state = 0;
+
     MYSQL *conn= mysql_init(NULL);/*Create database link pointer*/
 
     connectBD(&state, conn);
 
     if (state == 1) {
+        //prepare les requetes
         initPrepareSql(conn);
+        char pseudo [25], pwd[100];
+
+        printf("\nle pseudo");
+        fgets(pseudo, 50, stdin);
+
+        printf("\nle mdp");
+        fgets(pwd, 50, stdin);
+
+        //suppression \n fin de mot
+        for ( i = 0; i < 100; ++i) {
+            if (i <= 25 && pseudo[i] == '\n'){
+                pseudo[i] = 0;
+            }
+            if (pwd[i] == '\n'){
+                pwd[i] = 0;
+            }
+        }
+
+        insertUser(pseudo, pwd);
+    } else {
+        return 0;
     }
 
     /*fgets(phrase, 50, stdin);
@@ -139,7 +124,7 @@ int main(int argc, char **argv) {
     printf("\n%s\n", phrase);
     parse(phrase);*/
 
- return 0;
+
 }
 
 void err_exit(char* s){
