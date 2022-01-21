@@ -8,13 +8,21 @@
 
 void err_exit(char* s);
 
+void remove_n(char *chaine, int size){
+    int i;
+    for ( i = 0; i < size; ++i) {
+        if (chaine[i] == '\n'){
+            chaine[i] = 0;
+        }
+    }
+}
 void parse (char* src){
     int i,j = 0,k = 0;
     int size = strlen(src);
     char result [50][50] = {0};
     char final [150] = {0};
 
-
+    remove_n(src, 25);
     /*for (int i = 0; i < 50; ++i) {
         for (int j = 0; j < 50; ++j) {
             result[i][j] = 0;

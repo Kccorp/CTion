@@ -28,16 +28,11 @@ void parse (char* src){
     char final [150] = {0};
 
 
-    /*for (int i = 0; i < 50; ++i) {
-        for (int j = 0; j < 50; ++j) {
-            result[i][j] = 0;
-        }
-    }*/
-
     //sépare les mots
     for (i = 0; i < size; ++i) {
         if (src[i] != 32){
             result[j][k] = src[i];
+            result[j][k+1] = "\0";
             k++;
         } else{
             ++j;
