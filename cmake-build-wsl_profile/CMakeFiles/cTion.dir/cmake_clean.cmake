@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/cTion.dir/main.c.o"
+  "CMakeFiles/cTion.dir/test.c.o"
   "cTion.pdb"
   "cTion"
 )
