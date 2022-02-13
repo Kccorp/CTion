@@ -1,3 +1,3 @@
 /mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-debug/CMakeFiles/cTion.dir
 /mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-debug/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-debug/CMakeFiles/cTion.dir

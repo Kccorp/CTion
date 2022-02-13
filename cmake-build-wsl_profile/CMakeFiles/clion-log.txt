@@ -1,4 +1,4 @@
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - Unix Makefiles" /mnt/c/Users/Keiss/CLionProjects/cTion
+C:\Windows\system32\wsl.exe --distribution Ubuntu --exec /bin/bash -c "export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-wsl_profile && /home/kbod/cmake-3.21.1/bin/cmake -DCMAKE_BUILD_TYPE=Release -G 'CodeBlocks - Unix Makefiles' /mnt/c/Users/Keiss/CLionProjects/cTion"
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-wsl_profile

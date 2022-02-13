@@ -76,7 +76,7 @@ void analyse(char **result, int color, int cptWord){
 
 void split(int size, char *src, char **result){
     //sépare les mots
-    int i, j=0, k=0;
+    unsigned long long int i, j=0, k=0;
     for (i = 0; i < size-1; ++i) { //size-1 pour ne pas prendre en compte \0 du fgets
         if (src[i] != 32 ){
             result[j][k] = src[i];
@@ -90,15 +90,16 @@ void split(int size, char *src, char **result){
 }
 
 void parse (char* src){
-    int i;
-    int size = (int) strlen(src);
-    printf("la size : %d", size);
+    unsigned long long int i;
+    unsigned long long int size = strlen(src);
+    printf("la size : %llu", size);
     //char result [10050][20000] = {0};
-    char final [20000] = {0};
+    char final [15000] = {0};
 
 
-    int max, cpt=0, cptWord=1;
-    for (i = 0; i < strlen(src); ++i) { //size-1 pour ne pas prendre en compte \0 du fgets
+    int max, cpt=0;
+    unsigned long long cptWord=1;
+    for (i = 0; i < size; ++i) { //size-1 pour ne pas prendre en compte \0 du fgets
         if (src[i] != 32 ){
             if (cpt > max)max=cpt;
             cpt++;
@@ -110,7 +111,7 @@ void parse (char* src){
 
     if (max < 10)max=10;
 
-    printf("\nnbr mots : %d", cptWord);
+    printf("\nnbr mots : %llu", cptWord);
     printf("\nmaxlength : %d", max);
 
 
@@ -121,12 +122,12 @@ void parse (char* src){
         result[i] = malloc(max * sizeof(char));
     }
 
-    /*for ( int i = 0; i < cptWord; ++i) {
+    for ( i = 0; i < cptWord; ++i) {
         for (int j = 0; j < max; ++j) {
-            result[i][j] = 'k';
+            result[i][j] = 0;
         }
     }
-
+    /*
     for ( i = 0; i < cptWord; ++i) {
         printf("\nla ligne n%d contenu : %s",i, result[i]);
     }*/
@@ -160,7 +161,8 @@ void parse (char* src){
             }
         }
 
-        printf("\n la phrase est : %s", final);
+        //printf("\nla phrase est : %s", final);
+        strcpy(src, final);
 
         for ( i = 0; i < cptWord; ++i) {
             free(result[i]);

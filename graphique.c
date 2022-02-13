@@ -1,0 +1,128 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <gtk/gtk.h>
+#include <string.h>
+
+
+static GtkWidget *inputname;
+static GtkWidget *inputpassword;
+static GtkWidget *resultPseudo;
+static GtkWidget *resultPassword;
+static GtkWidget *error;
+
+
+static char logPseudo [25];
+static char logPassword [100];
+
+static int tmpGtkError=0;
+
+void closeWindow( GtkWidget *widget, gpointer user_data);
+
+void newUser(GtkWidget *widget, gpointer user_data){
+    char buffer[25] ;
+    int check=1, checkPassword=0;
+
+
+    verify_password((char *)gtk_entry_get_text(GTK_ENTRY(inputpassword)), &checkPassword);
+
+    if (strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputname))) > 25 ||
+        strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputname))) <= 0 ||
+        strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputname))) <= 3    ){
+
+        gtk_label_set_text(GTK_LABEL(resultPseudo), "pseudo non conforme");
+        check = 0;
+
+    } else if (strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputname))) <= 25 && strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputname))) > 3){
+
+        gtk_label_set_text(GTK_LABEL(resultPseudo), "Pseudo OK");
+        strcpy(logPseudo, (char *)gtk_entry_get_text(GTK_ENTRY(inputname)));
+
+    }
+
+    if (strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputpassword))) > 100 ||
+        strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputpassword))) <= 0 ||
+        strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputpassword))) < 4 ||
+        checkPassword == 0){
+
+        gtk_label_set_text(GTK_LABEL(resultPassword), "Mot de passe non conforme");
+        check = 0;
+
+    } else if (strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputpassword))) <= 25 &&
+               strlen((char *)gtk_entry_get_text(GTK_ENTRY(inputpassword))) > 3){
+
+        gtk_label_set_text(GTK_LABEL(resultPassword), "Mot de passe OK ");
+        strcpy(logPassword, (char *)gtk_entry_get_text(GTK_ENTRY(inputpassword)));
+
+    }
+
+    if (check == 1 && checkPassword == 1){
+        closeWindow(widget, user_data);
+    }
+}
+
+void closeWindow( GtkWidget *widget, gpointer user_data)
+{
+    gtk_main_quit();
+    g_application_quit(user_data);
+
+
+}
+
+
+void windowConnect(int argc, char **argv, char *pwd, char *psd) {
+    GtkWidget *window, *grid, *login;
+    gtk_init(&argc, &argv);
+
+    GtkWidget *name;
+    GtkWidget *password;
+
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    gtk_window_set_title(GTK_WINDOW(window), "cTion");
+    //gtk_window_set_default_size(GTK_WINDOW(window), 500, 500);
+
+    grid = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    error = gtk_label_new(" ");
+    gtk_grid_attach(GTK_GRID(grid), error, 1, 0, 1, 1);
+    if (tmpGtkError==1)gtk_label_set_text(GTK_LABEL(error), "Pseudo déjà utilisé");
+    if (tmpGtkError==2)gtk_label_set_text(GTK_LABEL(error), "Mot de passe ou pseudo incorrect");
+
+    name = gtk_label_new("Pseudo :");
+    gtk_grid_attach(GTK_GRID(grid), name, 0, 1, 1, 1);
+    inputname = gtk_entry_new();
+    gtk_grid_attach(GTK_GRID(grid), inputname, 0, 3, 1, 1);
+
+    password = gtk_label_new("Password :");
+    gtk_grid_attach(GTK_GRID(grid), password, 0, 5, 1, 1);
+    inputpassword = gtk_entry_new();
+    gtk_entry_set_visibility(inputpassword, FALSE);
+    gtk_grid_attach(GTK_GRID(grid), inputpassword, 0, 6, 1, 1);
+
+
+    resultPseudo = gtk_label_new(" ");
+    gtk_grid_attach(GTK_GRID(grid), resultPseudo, 2, 3, 1, 1);
+
+    resultPassword = gtk_label_new(" ");
+    gtk_grid_attach(GTK_GRID(grid), resultPassword, 2, 6, 1, 1);
+
+
+    login = gtk_button_new_with_label("Se connecter");
+
+    g_signal_connect(login, "clicked", G_CALLBACK(newUser), NULL);
+    gtk_grid_attach(GTK_GRID(grid), login, 2, 7, 1, 1);
+
+
+    gtk_widget_show_all(window);
+    gtk_main();
+
+    //printf("\nPseudo : %s\nMot de passe : %s",logPseudo, logPassword);
+
+    strcpy(pwd, logPassword);
+    strcpy(psd, logPseudo);
+
+
+    //closeWindow(window, g_get_user_data_dir());
+}
