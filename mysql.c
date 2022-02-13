@@ -170,7 +170,6 @@ void showUser (MYSQL *conn, char *pseudoSaisie, char *password){
         row++;
         result = mysql_stmt_fetch(selectUser);
         if (result == MYSQL_NO_DATA){
-            //printf("-- FIN --\n");
             break;
         }
         if (result != 0){
@@ -184,7 +183,6 @@ void showUser (MYSQL *conn, char *pseudoSaisie, char *password){
         //printf("ligne %d: id=%d pseudo=%s password=%s\n", row, id, strPseudo, strpwd);
 
         if (strcmp(pseudoSaisie, strPseudo) == 0){
-            //printf("\nUn compte existe");
             strcpy(password, strpwd);
             break;
         }
@@ -192,7 +190,6 @@ void showUser (MYSQL *conn, char *pseudoSaisie, char *password){
     }
 
     mysql_free_result(metaData);
-    printf("metaData clear");
 }
 
 void verifUser (MYSQL *conn, char *pseudoSaisie, int *verif){
@@ -238,7 +235,6 @@ void verifUser (MYSQL *conn, char *pseudoSaisie, int *verif){
         }
 
         strPseudo[lenName]='\0';
-        printf("ligne %d: pseudo=%s Pseudo Saisi=%s \n", row, strPseudo, pseudoSaisie);
 
         if (strcmp(pseudoSaisie, strPseudo) == 0){
             *verif = 2;

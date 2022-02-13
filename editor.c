@@ -42,7 +42,7 @@ void reset (char* src){
     strncpy(src, reset, 7);
 }
 
-void analyse(char **result, int color, int cptWord){
+void analyse(char **result, int color, unsigned int cptWord){
     //Analyse des mots
     int i;
     for (i = 0; i < cptWord; ++i) {
@@ -74,7 +74,7 @@ void analyse(char **result, int color, int cptWord){
     }
 }
 
-void split(int size, char *src, char **result){
+void split(unsigned int size, char *src, char **result){
     //sépare les mots
     unsigned long long int i, j=0, k=0;
     for (i = 0; i < size-1; ++i) { //size-1 pour ne pas prendre en compte \0 du fgets
@@ -90,16 +90,17 @@ void split(int size, char *src, char **result){
 }
 
 void parse (char* src){
-    unsigned long long int i;
-    unsigned long long int size = strlen(src);
-    printf("la size : %llu", size);
-    //char result [10050][20000] = {0};
+    unsigned int i;
+    unsigned int size = strlen(src);
     char final [15000] = {0};
 
+    unsigned int max=0, cpt=0;
+    unsigned int cptWord=1;
+    unsigned int last;
 
-    int max, cpt=0;
-    unsigned long long cptWord=1;
-    for (i = 0; i < size; ++i) { //size-1 pour ne pas prendre en compte \0 du fgets
+
+    //Compte le nombre de mots et la taille du mot le plus grand pour optimiser le tableau à créer
+    for (i = 0; i < size-1; ++i) { //size-1 pour ne pas prendre en compte \0 du fgets
         if (src[i] != 32 ){
             if (cpt > max)max=cpt;
             cpt++;
@@ -111,48 +112,27 @@ void parse (char* src){
 
     if (max < 10)max=10;
 
-    printf("\nnbr mots : %llu", cptWord);
-    printf("\nmaxlength : %d", max);
-
-
-    cptWord++;
-    max++;
+    //Initialise tableau dynamique 2D
     char **result = malloc(cptWord * sizeof(char*));
     for (i = 0; i < cptWord; ++i) {
         result[i] = malloc(max * sizeof(char));
     }
 
+    //Remplie de 0 l'array 2D
     for ( i = 0; i < cptWord; ++i) {
         for (int j = 0; j < max; ++j) {
             result[i][j] = 0;
         }
     }
-    /*
-    for ( i = 0; i < cptWord; ++i) {
-        printf("\nla ligne n%d contenu : %s",i, result[i]);
-    }*/
-
 
     if (result != NULL){
-        /*for (i = 0; i < cptWord; ++i) {
-            for ( int j = 0; j < max; ++j) {
-                result[i][j]='0';
-            }
-        }*/
+
         split(size, src, result);
 
         int color = 0;
         analyse(result, color, cptWord);
 
-        //Affichage du tableau 2D
-        for ( i = 0; i < cptWord; ++i) {
-            if (result[i][0] != 0){
-                printf("\n%s", result[i]);
-            }
-        }
-
         //reconstitution de la phrase
-        int last;
         for ( i = 0; i < cptWord; ++i) {
             if (result[i][0] != 0){
                 strcat(final,result[i]);
@@ -160,10 +140,9 @@ void parse (char* src){
                 final[last] = 32;
             }
         }
-
-        //printf("\nla phrase est : %s", final);
         strcpy(src, final);
 
+        //Libère le tableau 2D
         for ( i = 0; i < cptWord; ++i) {
             free(result[i]);
         }
@@ -171,36 +150,7 @@ void parse (char* src){
 
     } else{
         printf("pas assez de ressources");
+        exit(1);
     }
 
-
-
-
-   // split(size, src, result);
-
-/*
-    int color = 0;
-    analyse(result, color, cptWord);
-
-
-    //Affichage du tableau 2D
-    for ( i = 0; i < cptWord; ++i) {
-        if (result[i][0] != 0){
-            printf("\n%s", result[i]);
-        }
-    }
-
-    printf("\n-------------------");
-
-    int last;
-    for ( i = 0; i < cptWord; ++i) {
-        if (result[i][0] != 0){
-            strcat(final,result[i]);
-            last = strlen(final);
-            final[last] = 32;
-        }
-    }
-
-    printf("\n la phrase est : %s", final);
-*/
 }

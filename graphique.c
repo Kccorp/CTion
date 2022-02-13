@@ -19,7 +19,7 @@ static int tmpGtkError=0;
 
 void closeWindow( GtkWidget *widget, gpointer user_data);
 
-void newUser(GtkWidget *widget, gpointer user_data){
+void button(GtkWidget *widget, gpointer user_data){
     char buffer[25] ;
     int check=1, checkPassword=0;
 
@@ -111,7 +111,7 @@ void windowConnect(int argc, char **argv, char *pwd, char *psd) {
 
     login = gtk_button_new_with_label("Se connecter");
 
-    g_signal_connect(login, "clicked", G_CALLBACK(newUser), NULL);
+    g_signal_connect(login, "clicked", G_CALLBACK(button), NULL);
     gtk_grid_attach(GTK_GRID(grid), login, 2, 7, 1, 1);
 
 
