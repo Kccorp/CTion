@@ -1,0 +1,7 @@
+window_size_x:500
+window_size_y:500
+
+host:n2o93bb1bwmn0zle.chr7pe7iynqr.eu-west-1.rds.amazonaws.com
+database:wbz6ulqh7s5afptp
+
+
