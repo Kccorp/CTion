@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/cTion.dir/fileConfig.c.o"
-  "CMakeFiles/cTion.dir/fileConfig.c.o.d"
+  "CMakeFiles/cTion.dir/main.c.o"
+  "CMakeFiles/cTion.dir/main.c.o.d"
   "cTion"
   "cTion.pdb"
 )

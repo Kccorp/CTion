@@ -6,6 +6,7 @@
 #include "editor.c"
 #include "account.c"
 #include "graphique.c"
+#include "fileConfig.c"
 
 void vider_buffer(void){
     //fflush(stdin);
@@ -102,10 +103,13 @@ int main(int argc, char **argv) {
 
     int state = 0;
     char pseudo [25]={0};
+    char window_size_x[10], window_size_y[10], hostDB[100], nameDB[50];
+
+    fileConfig(window_size_x, window_size_y, hostDB, nameDB); //recupere les donnée du fichier de conf
 
     MYSQL *conn= mysql_init(NULL);/*Create database link pointer*/
 
-    connectBD(&state, conn);
+    connectBD(&state, conn, hostDB, nameDB);
 
 
     if (state == 1) {

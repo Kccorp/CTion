@@ -14,13 +14,13 @@ MYSQL_STMT* addDoc = NULL;
 
 void err_exit(char* s);
 
-void connectBD (int *state, MYSQL *conn){
+void connectBD (int *state, MYSQL *conn, char *hostDB, char *bnName){
 
     if(conn == NULL) { /*If it returns NULL, the initialization failed*/
         printf("mysql_init failed!\n");
     }
     //conn=mysql_real_connect(conn,"192.168.50.133","cTion_user","1234","cTion",3306,NULL,0);
-    conn=mysql_real_connect(conn,"n2o93bb1bwmn0zle.chr7pe7iynqr.eu-west-1.rds.amazonaws.com","pz51cw591tewd1lp","n78bgxgqf4u510mu","wbz6ulqh7s5afptp",3306,NULL,0);
+    conn=mysql_real_connect(conn,hostDB,"pz51cw591tewd1lp","n78bgxgqf4u510mu",bnName,3306,NULL,0);
     if (conn) {
         printf("\033[0;34mConnection success! \033[0m\n");
         *state = 1;
