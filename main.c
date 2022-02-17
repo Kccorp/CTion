@@ -26,7 +26,29 @@ void remove_n(char *chaine, int size){
     }
 }
 
-void connectUser (int *connected, MYSQL *conn, int argc, char **argv, char *pseudo){
+void askDoc (char *titre, char *content, char *description){
+    printf("Saisir un titre : ");
+    fgets(titre, 150, stdin);
+    printf("Saisir une description : ");
+    fgets(description, 300, stdin);
+    printf("Vous pouvez saisir votre contenu : \n");
+    fgets(content, 15000, stdin); //probleme avec le fgets prend un max de 4096
+}
+
+void verifContent(char *titre, char * content, char *description){
+    if (strlen(content)>14990){
+        char reload[5];
+        printf("\nVotre contenu fait la taille maximum une partie a pu être supprimé voulez-vous resaisir votre contenu? (y/n)");
+        fgets(reload, 5, stdin);
+        remove_n(reload, 5);
+        if (strcmp(reload,"y")==0 || strcmp(reload,"Y")==0 || strcmp(reload,"yes")==0 || strcmp(reload,"YES")==0 ){
+            askDoc(titre, content, description);
+            verifContent(titre, content, description);
+        }
+    }
+}
+
+void connectUser (int *connected, MYSQL *conn, int argc, char **argv, char *pseudo, char *window_size_x, char *window_size_y){
     int choice;
     char pwd[100];
     char checkPwd[100]={0};
@@ -37,51 +59,19 @@ void connectUser (int *connected, MYSQL *conn, int argc, char **argv, char *pseu
 
     if (choice == 1){//Choisir de se connecter
 
-        //demande à l'utilisateur 3x les identifiants
-        /*for (i = 0; i < 3; ++i) {
-            if (i > 0)printf("\nIdentifiants incorrect \nVeuillez réessayer");
-            //entrer pseudo
-            ask_pseudo(pseudo);
-
-            //entrer password
-            ask_password(pwd);
-
-            //Récupere les utilisateurs
-            showUser (conn, pseudo, checkPwd);
-
-            //Vérifie si l'utilisateur à rentrée le bon mot de passe
-            check_password(pwd, checkPwd, connected);
-            //sort de la boucle si bon identifiants
-            if (*connected == 1)break;
-            if (i == 2){
-                printf("\nConnexion interrompu - arret du programme");
-                exit(1);
-            }
-        }*/
-
         do {
-            windowConnect(argc, argv, pwd, pseudo);
+            windowConnect(argc, argv, pwd, pseudo, window_size_x, window_size_y);
             showUser (conn, pseudo, checkPwd);
             check_password(pwd, checkPwd, connected);
             if(*connected==0)tmpGtkError=2;
         } while (*connected == 0);
 
-        printf("connected : %d", *connected);
-
-
-
     } else if (choice == 2) {//Choisir de S'inscrire
         int uniqueName=0;
 
         //demande à l'utilisateur ses infos de comtpes et vérifie si un pseudo identique existe déjà
-        /*do {
-            register_pseudo(pseudo, &uniqueName);
-            register_password(pwd);
-            verifUser(conn,pseudo, &uniqueName);
-        } while (uniqueName != 1);*/
-
         do {
-            windowConnect(argc, argv, pwd, pseudo);
+            windowConnect(argc, argv, pwd, pseudo, window_size_x, window_size_y);
             remove_n(pseudo, 25);
             verifUser(conn,pseudo, &uniqueName);
             if(uniqueName!=0)tmpGtkError=1;
@@ -91,7 +81,7 @@ void connectUser (int *connected, MYSQL *conn, int argc, char **argv, char *pseu
         //fait l'injection dans la db
         insertUser(pseudo, pwd);
         *connected = 1;
-        printf("Inscription validée - vous êtes connecté");
+        printf("\nInscription validée - vous êtes connecté\n");
 
     } else if (choice == 3) {
         printf("\nGoodbye");
@@ -120,23 +110,13 @@ int main(int argc, char **argv) {
         //prepare les requetes
         initPrepareSql(conn);
 
-        connectUser(&connected, conn,  argc,  argv, pseudo);
+        connectUser(&connected, conn,  argc,  argv, pseudo, window_size_x, window_size_y);
 
 
         if (connected == 1){
-            printf("\n\n\ninsertion\n");
-            char titre[20]= "Titre 2";
-            char content[15000]= "ezgzerv";
-            char description[20]= "ezgzerv";
-
-            fgets(titre, 20, stdin);
-
-            insertDoc(titre, content, description);
-
-        }
-    /*        int choice;
+            int choice;
             while (choice > 3 || choice <= 0 ){
-                printf("\nBonjour %s", pseudo\n)
+                printf("\nBonjour %s", pseudo);
                 printf("\n\n\n1)Consulter un document.\n2)Créer un document.\n3)Exit.\n");
                 scanf("%d", &choice);
                 vider_buffer();
@@ -150,24 +130,15 @@ int main(int argc, char **argv) {
                 char content[15000], titre[150], description[300];
 
                //if (cpt>0)printf("Le contenu doit être inférieur à 20 000 caracteres");
-                printf("Saisir un titre : ");
-                fgets(titre, 150, stdin);
-                printf("Saisir une description : ");
-                fgets(description, 300, stdin);
-                printf("Vous pouvez saisir votre contenu : \n");
-                fgets(content, 20000, stdin); //probleme avec le fgets prend un max de 4096
+                /*askDoc(titre, content, description);
+                verifContent(titre, content, description); //averti user text trés grand
 
-                //parse(content);
-
-                printf("la phrase %s", content);
-
-                //insertDoc(titre, content, description);
-
-              initPrepareSql(conn);
-                char test[20]= "main";
-                char test1[15000]= "ezgzerv";
-                char test2[20]= "ezgzerv";
-                insertDoc(test, test1, test2);
+                parse(content);*/
+                //printf("la phrase %s", content);
+                strcpy(titre, "titre");
+                strcpy(description, "descrip");
+                strcpy(content, "super le contennu");
+                insertDoc(titre, content, description);
 
             }
             else if (choice == 3){
@@ -175,9 +146,9 @@ int main(int argc, char **argv) {
                 exit(0);
             }
         }
-    */
-       // closePreparedStatements();
-       // closeDb(conn);
+
+        closePreparedStatements();
+        closeDb(conn);
 
     } else {
         return 1;

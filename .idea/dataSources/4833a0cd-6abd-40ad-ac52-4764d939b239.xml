@@ -905,7 +905,7 @@ wbz6ulqh7s5afptp|schema||pz51cw591tewd1lp||UPDATE|G</Grants>
       <DataType>text|0s</DataType>
       <Position>2</Position>
     </column>
-    <column id="280" parent="275" name="Description">
+    <column id="280" parent="275" name="description">
       <DataType>varchar(300)|0s</DataType>
       <Position>3</Position>
     </column>

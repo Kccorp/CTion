@@ -45,8 +45,6 @@ void fileConfig(char *window_size_x, char *window_size_y,char *hostDB,char *name
     // close the file
     if (fclose(fp)!=0) {
         printf("fichier non fermé");
-    }else{
-        printf("\nfile closed\n");;
     }
 
     //set variables

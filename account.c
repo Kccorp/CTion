@@ -35,7 +35,7 @@ void check_password(char *pwd, char *checkPwd, int *connected){
     if (checkPwd[0] != 0){
         //printf("\nle mot de passe de %s est %s", pseudo, checkPwd);
         if (strcmp(pwd, checkPwd) == 0){
-            printf("\nle mdp est correct connexion validé");
+            printf("\nle mdp est correct connexion validé\n");
             *connected = 1;
         } else {
             printf("\nle mdp est incorrect connexion refusé\n");

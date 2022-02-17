@@ -42,7 +42,7 @@ void reset (char* src){
     strncpy(src, reset, 7);
 }
 
-void analyse(char **result, int color, int cptWord){
+void analyse(char **result, int color, unsigned int cptWord){
     //Analyse des mots
     int i;
     for (i = 0; i < cptWord; ++i) {
@@ -74,9 +74,9 @@ void analyse(char **result, int color, int cptWord){
     }
 }
 
-void split(int size, char *src, char **result){
+void split(unsigned int size, char *src, char **result){
     //sépare les mots
-    unsigned long long int i, j=0, k=0;
+    unsigned int i, j=0, k=0;
     for (i = 0; i < size-1; ++i) { //size-1 pour ne pas prendre en compte \0 du fgets
         if (src[i] != 32 ){
             result[j][k] = src[i];
@@ -91,14 +91,14 @@ void split(int size, char *src, char **result){
 
 void parse (char* src){
     unsigned long long int i;
-    unsigned long long int size = strlen(src);
-    printf("la size : %llu", size);
+    unsigned int size = strlen(src);
+    //printf("la size : %llu", size);
     //char result [10050][20000] = {0};
     char final [15000] = {0};
 
 
     int max, cpt=0;
-    unsigned long long cptWord=1;
+    unsigned int cptWord=1;
     for (i = 0; i < size; ++i) { //size-1 pour ne pas prendre en compte \0 du fgets
         if (src[i] != 32 ){
             if (cpt > max)max=cpt;
@@ -111,8 +111,8 @@ void parse (char* src){
 
     if (max < 10)max=10;
 
-    printf("\nnbr mots : %llu", cptWord);
-    printf("\nmaxlength : %d", max);
+    //printf("\nnbr mots : %d", cptWord);
+    //printf("\nmaxlength : %d", max);
 
 
     cptWord++;
@@ -127,18 +127,10 @@ void parse (char* src){
             result[i][j] = 0;
         }
     }
-    /*
-    for ( i = 0; i < cptWord; ++i) {
-        printf("\nla ligne n%d contenu : %s",i, result[i]);
-    }*/
 
 
     if (result != NULL){
-        /*for (i = 0; i < cptWord; ++i) {
-            for ( int j = 0; j < max; ++j) {
-                result[i][j]='0';
-            }
-        }*/
+
         split(size, src, result);
 
         int color = 0;

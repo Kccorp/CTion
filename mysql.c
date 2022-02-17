@@ -2,9 +2,9 @@
 // Created by Keissy on 19/01/2022.
 //
 
-#define INSERT_USER "INSERT INTO wbz6ulqh7s5afptp.user (pseudo, pwd) VALUES (?,  ?)"
-#define INSERT_DOC "INSERT INTO wbz6ulqh7s5afptp.document (titre, contenu, description) VALUES (?,  ?, ?)"
-#define SELECT_USER "SELECT id_user, pseudo, pwd from user"
+#define INSERT_USER "INSERT INTO user (pseudo, pwd) VALUES (?,  ?)"
+#define INSERT_DOC "INSERT INTO document (titre, contenu, description) VALUES (?,  ?, ?)"
+#define SELECT_USER "SELECT pseudo, pwd from user"
 #define CHECK_USER "SELECT pseudo from user"
 
 MYSQL_STMT* addUser = NULL;
@@ -20,7 +20,7 @@ void connectBD (int *state, MYSQL *conn, char *hostDB, char *bnName){
         printf("mysql_init failed!\n");
     }
     //conn=mysql_real_connect(conn,"192.168.50.133","cTion_user","1234","cTion",3306,NULL,0);
-    conn=mysql_real_connect(conn,hostDB,"pz51cw591tewd1lp","n78bgxgqf4u510mu",bnName,3306,NULL,0);
+    conn=mysql_real_connect(conn,"n2o93bb1bwmn0zle.chr7pe7iynqr.eu-west-1.rds.amazonaws.com","pz51cw591tewd1lp","n78bgxgqf4u510mu",bnName,3306,NULL,0);
     if (conn) {
         printf("\033[0;34mConnection success! \033[0m\n");
         *state = 1;
@@ -32,14 +32,14 @@ void connectBD (int *state, MYSQL *conn, char *hostDB, char *bnName){
 
 void initPrepareSql (MYSQL *conn){
     int prepare;
-    unsigned long count;
+    unsigned int count;
 
     addUser = mysql_stmt_init(conn);
     if (addUser == NULL) err_exit("init stmt failed");
     prepare = mysql_stmt_prepare(addUser, INSERT_USER, strlen(INSERT_USER));
     if (prepare != 0) err_exit("prepare stmt failed");
     count = mysql_stmt_param_count(addUser);
-    printf("Il y a %ld parametre dans l'sql preparé Insert\n", count);
+    printf("Il y a %d parametre dans l'sql preparé Insert\n", count);
 
     selectUser = mysql_stmt_init(conn);
     if (selectUser == NULL) err_exit("init stmt failed");
@@ -56,11 +56,11 @@ void initPrepareSql (MYSQL *conn){
     prepare = mysql_stmt_prepare(addDoc, INSERT_DOC, strlen(INSERT_DOC));
     if (prepare != 0) err_exit("prepare stmt failed");
     count = mysql_stmt_param_count(addDoc);
-    printf("Il y a %ld parametre dans l'sql preparé Insert\n", count);
+    printf("Il y a %d parametre dans l'sql preparé Insert\n", count);
 
 }
 
-void insertDoc(char* titre, char *content , char* description ){
+void insertDoc(char *titre, char *content , char* description ){
     MYSQL_BIND bind[3];
 
     unsigned int array_size = 1; /* the number of row to insert? */
@@ -122,41 +122,31 @@ void insertUser(char* pseudo, char* pwd ){
 
 void showUser (MYSQL *conn, char *pseudoSaisie, char *password){
 
-    char strPseudo[100];
-    char strpwd[100];
-    unsigned long int lenName;
-    unsigned long int lenpwd;
-    int id;
+    char strPseudo[25];
+    char strpwd[150];
+    unsigned long lenName;
+    unsigned long lenpwd;
     int result;
     int row;
-    MYSQL_BIND bind[3]; /*used to get result, not to provide parameters*/
+    MYSQL_BIND bind[2]; /*used to get result, not to provide parameters*/
     MYSQL_FIELD *fields;
     MYSQL_RES *metaData;
-    //my_bool isNull[3];
-
-
 
     metaData = mysql_stmt_result_metadata(selectUser);
     if (metaData == NULL) err_exit("impossible d'obtenir les metadonnées");
 
     fields = mysql_fetch_fields(metaData);
-    memset(bind,0,sizeof(MYSQL_BIND)*3);
+    memset(bind,0,sizeof(MYSQL_BIND)*2);
 
     bind[0].buffer_type = fields[0].type;
-    bind[0].buffer = &id;
-    //bind[0].is_null = &isNull[0];
+    bind[0].buffer = strPseudo;
+    bind[0].buffer_length = 25;
+    bind[0].length = &lenName;
 
     bind[1].buffer_type = fields[1].type;
-    bind[1].buffer = strPseudo;
-    bind[1].buffer_length = 25;
-    //bind[1].is_null = &isNull[1];
-    bind[1].length = &lenName;
-
-    bind[2].buffer_type = fields[2].type;
-    bind[2].buffer = strpwd;
-    bind[2].buffer_length = 100;
-    //bind[2].is_null = &isNull[2];
-    bind[2].length = &lenpwd;
+    bind[1].buffer = strpwd;
+    bind[1].buffer_length = 100;
+    bind[1].length = &lenpwd;
 
 
     result = mysql_stmt_bind_result(selectUser, bind);
@@ -192,12 +182,13 @@ void showUser (MYSQL *conn, char *pseudoSaisie, char *password){
     }
 
     mysql_free_result(metaData);
-    printf("metaData clear");
+    if (metaData==NULL)
+        printf("metaData clear");
 }
 
 void verifUser (MYSQL *conn, char *pseudoSaisie, int *verif){
     char strPseudo[25];
-    unsigned long int lenName;
+    unsigned int lenName;
     int result;
     int row;
     MYSQL_BIND bind[1]; /*used to get result, not to provide parameters*/
@@ -238,7 +229,7 @@ void verifUser (MYSQL *conn, char *pseudoSaisie, int *verif){
         }
 
         strPseudo[lenName]='\0';
-        printf("ligne %d: pseudo=%s Pseudo Saisi=%s \n", row, strPseudo, pseudoSaisie);
+        //printf("ligne %d: pseudo=%s Pseudo Saisi=%s \n", row, strPseudo, pseudoSaisie);
 
         if (strcmp(pseudoSaisie, strPseudo) == 0){
             *verif = 2;

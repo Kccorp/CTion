@@ -70,7 +70,7 @@ void closeWindow( GtkWidget *widget, gpointer user_data)
 }
 
 
-void windowConnect(int argc, char **argv, char *pwd, char *psd) {
+void windowConnect(int argc, char **argv, char *pwd, char *psd, char *window_size_x, char *window_size_y) {
     GtkWidget *window, *grid, *login;
     gtk_init(&argc, &argv);
 
@@ -80,7 +80,9 @@ void windowConnect(int argc, char **argv, char *pwd, char *psd) {
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     gtk_window_set_title(GTK_WINDOW(window), "cTion");
-    //gtk_window_set_default_size(GTK_WINDOW(window), 500, 500);
+    if (atoi(window_size_x) != 0 && atoi(window_size_y) != 0)
+        gtk_window_set_default_size(GTK_WINDOW(window), atoi(window_size_x), atoi(window_size_y));
+    gtk_window_set_resizable (GTK_WINDOW(window), TRUE);
 
     grid = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(window), grid);
