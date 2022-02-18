@@ -4,6 +4,7 @@
 
 #define INSERT_USER "INSERT INTO user (pseudo, pwd) VALUES (?,  ?)"
 #define INSERT_DOC "INSERT INTO document (titre, contenu, description) VALUES (?,  ?, ?)"
+#define INSERT_ASSOC "INSERT INTO possede (pseudo, titreDoc) VALUES (?, ?)"
 #define SELECT_USER "SELECT pseudo, pwd from user"
 #define CHECK_USER "SELECT pseudo from user"
 
@@ -11,6 +12,7 @@ MYSQL_STMT* addUser = NULL;
 MYSQL_STMT* selectUser = NULL;
 MYSQL_STMT* checkUser = NULL;
 MYSQL_STMT* addDoc = NULL;
+MYSQL_STMT* addAssoc = NULL;
 
 void err_exit(char* s);
 
@@ -39,7 +41,7 @@ void initPrepareSql (MYSQL *conn){
     prepare = mysql_stmt_prepare(addUser, INSERT_USER, strlen(INSERT_USER));
     if (prepare != 0) err_exit("prepare stmt failed");
     count = mysql_stmt_param_count(addUser);
-    printf("Il y a %d parametre dans l'sql preparé Insert\n", count);
+    printf("Il y a %d parametre dans l'sql preparé Insert User\n", count);
 
     selectUser = mysql_stmt_init(conn);
     if (selectUser == NULL) err_exit("init stmt failed");
@@ -56,8 +58,42 @@ void initPrepareSql (MYSQL *conn){
     prepare = mysql_stmt_prepare(addDoc, INSERT_DOC, strlen(INSERT_DOC));
     if (prepare != 0) err_exit("prepare stmt failed");
     count = mysql_stmt_param_count(addDoc);
-    printf("Il y a %d parametre dans l'sql preparé Insert\n", count);
+    printf("Il y a %d parametre dans l'sql preparé Insert Document\n", count);
 
+    addAssoc = mysql_stmt_init(conn);
+    if (addAssoc == NULL) err_exit("init stmt failed");
+    prepare = mysql_stmt_prepare(addAssoc, INSERT_ASSOC, strlen(INSERT_ASSOC));
+    if (prepare != 0) err_exit("prepare stmt failed");
+    count = mysql_stmt_param_count(addAssoc);
+    printf("Il y a %d parametre dans l'sql preparé Insert Assoc\n", count);
+
+}
+
+void insertAssoc(char *titre, char *pseudo){
+    MYSQL_BIND bind[2];
+
+    unsigned int array_size = 1; // the number of row to insert?
+    unsigned long titreLen = strlen(titre);
+    unsigned long pseudoLen = strlen(pseudo);
+    int result;
+
+    memset(bind, 0, sizeof(MYSQL_BIND)*2);
+
+    bind[0].buffer_type = MYSQL_TYPE_STRING;
+    bind[0].buffer = pseudo;
+    bind[0].buffer_length = strlen(pseudo);
+    bind[0].length = &pseudoLen;
+
+    bind[1].buffer_type = MYSQL_TYPE_STRING;
+    bind[1].buffer = titre;
+    bind[1].buffer_length = strlen(titre);
+    bind[1].length = &titreLen;
+
+    mysql_stmt_attr_set(addAssoc, 2, &array_size);
+    result = mysql_stmt_bind_param(addAssoc, bind);
+    if (result != 0) err_exit("bind stmt insert failed");
+    result = mysql_stmt_execute(addAssoc);
+    if (result != 0) err_exit("execute stmt insert failed");
 }
 
 void insertDoc(char *titre, char *content , char* description ){

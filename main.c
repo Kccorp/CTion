@@ -89,6 +89,14 @@ void connectUser (int *connected, MYSQL *conn, int argc, char **argv, char *pseu
     }
 }
 
+void startConnection(MYSQL *connOld, MYSQL *connNew, int *state, char *hostDB, char *nameDB){
+    closePreparedStatements();
+    closeDb(connOld);
+    connectBD(state, connNew, hostDB, nameDB);
+    if (*state == 1)
+        initPrepareSql(connNew);
+}
+
 int main(int argc, char **argv) {
 
     int state = 0;
@@ -104,7 +112,6 @@ int main(int argc, char **argv) {
 
     if (state == 1) {
 
-        int id_user;
         int connected = 0;
 
         //prepare les requetes
@@ -114,6 +121,7 @@ int main(int argc, char **argv) {
 
 
         if (connected == 1){
+
             int choice;
             while (choice > 3 || choice <= 0 ){
                 printf("\nBonjour %s", pseudo);
@@ -122,33 +130,41 @@ int main(int argc, char **argv) {
                 vider_buffer();
             }
             if (choice == 1){
+
                 printf("Work in progress");
+
             }
             else if (choice == 2){
+
                 //Création du document
                 printf("\nTu va créer un document\n");
                 char content[15000], titre[150], description[300];
 
                //if (cpt>0)printf("Le contenu doit être inférieur à 20 000 caracteres");
-                /*askDoc(titre, content, description);
+                askDoc(titre, content, description);
                 verifContent(titre, content, description); //averti user text trés grand
 
-                parse(content);*/
-                //printf("la phrase %s", content);
-                strcpy(titre, "titre");
-                strcpy(description, "descrip");
-                strcpy(content, "super le contennu");
+                parse(content);
+
+                remove_n(titre, 150);
+                remove_n(description, 300);
+
+                MYSQL *conn2= mysql_init(NULL);
+                startConnection(conn, conn2, &state, hostDB, nameDB);
+
                 insertDoc(titre, content, description);
+                insertAssoc(titre, pseudo);
+
+                printf("le document à été correctement inséré");
 
             }
             else if (choice == 3){
+
                 printf("Goodbye !");
                 exit(0);
+
             }
         }
-
-        closePreparedStatements();
-        closeDb(conn);
 
     } else {
         return 1;
