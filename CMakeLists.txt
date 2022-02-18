@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 project(cTion C)
 
 set(CMAKE_C_STANDARD 99)
-add_executable(cTion main.c)
+add_executable(cTion test.c)
 
 
 find_package(PkgConfig REQUIRED)

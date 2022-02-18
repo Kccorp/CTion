@@ -7,7 +7,7 @@
 #define INSERT_ASSOC "INSERT INTO possede (pseudo, titreDoc) VALUES (?, ?)"
 #define SELECT_USER "SELECT pseudo, pwd from user"
 #define CHECK_USER "SELECT pseudo from user"
-#define GET_DOC "SELECT titre, contenu, description from document inner join possede on document.titre = possede.titreDoc inner join user on possede.pseudo = user.pseudo where user.pseudo=?"
+#define GET_DOC "SELECT titre, contenu, description from document inner join possede on document.titre = possede.titreDoc inner join user on possede.pseudo = user.pseudo where user.pseudo = ?"
 
 MYSQL_STMT* addUser = NULL;
 MYSQL_STMT* selectUser = NULL;
@@ -73,6 +73,8 @@ void initPrepareSql (MYSQL *conn){
     if (selectDoc == NULL) err_exit("init stmt failed");
     prepare = mysql_stmt_prepare(selectDoc, GET_DOC, strlen(GET_DOC));
     if (prepare != 0) err_exit("prepare stmt failed");
+    count = mysql_stmt_param_count(selectDoc);
+    printf("Il y a %d parametre dans l'sql preparé getDoc\n", count);
 
 }
 
@@ -231,7 +233,7 @@ void showUser (MYSQL *conn, char *pseudoSaisie, char *password){
 
 void verifUser (MYSQL *conn, char *pseudoSaisie, int *verif){
     char strPseudo[25];
-    unsigned int lenName;
+    unsigned long lenName;
     int result;
     int row;
     MYSQL_BIND bind[1]; /*used to get result, not to provide parameters*/
@@ -294,22 +296,32 @@ void getDoc (MYSQL *conn, char *pseudo){
     char strTitre[150];
     char strDescription[300];
     char strContent[15000];
-    unsigned int lenTitre;
-    unsigned int lenDescriptionn;
-    unsigned int lenContent;
+    unsigned long lenTitre;
+    unsigned long lenDescriptionn;
+    unsigned long lenContent;
+    unsigned long pseudoLen = strlen(pseudo);
     int result;
+    int result1;
     int row;
+    unsigned int array_size = 1;
     MYSQL_BIND bind[3]; /*used to get result, not to provide parameters*/
+    MYSQL_BIND insertBind[1];
     MYSQL_FIELD *fields;
     MYSQL_RES *metaData;
     //my_bool isNull[1];
 
 
-    metaData = mysql_stmt_result_metadata(checkUser);
+    metaData = mysql_stmt_result_metadata(selectDoc);
     if (metaData == NULL) err_exit("impossible d'obtenir les metadonnées");
 
     fields = mysql_fetch_fields(metaData);
-    memset(bind,0,sizeof(MYSQL_BIND)*3);
+    memset(bind,0,sizeof(MYSQL_BIND)*3); //reserve la mémoire pour le l'obtention des resultats
+    memset(insertBind,0,sizeof(MYSQL_BIND)); //reserve la mémoire pour définir le paramètre
+
+    insertBind[0].buffer_type = MYSQL_TYPE_STRING;
+    insertBind[0].buffer = pseudo;
+    insertBind[0].buffer_length = strlen(pseudo);
+    insertBind[0].length = &pseudoLen;
 
     bind[0].buffer_type = fields[0].type;
     bind[0].buffer = strTitre;
@@ -329,6 +341,11 @@ void getDoc (MYSQL *conn, char *pseudo){
     //bind[0].is_null = &isNull[0];
     bind[2].length = &lenDescriptionn;
 
+    mysql_stmt_attr_set(selectDoc, 1, &array_size);
+    result1 = mysql_stmt_bind_param(selectDoc, insertBind);
+    if (result1 != 0) err_exit("bind stmt insert failed");
+    result1 = mysql_stmt_execute(selectDoc);
+    if (result1 != 0) err_exit("execute stmt insert failed");
 
     result = mysql_stmt_bind_result(selectDoc, bind);
     if (result!=0) err_exit("Le stockage des données à échoué");
@@ -348,18 +365,18 @@ void getDoc (MYSQL *conn, char *pseudo){
             break;
         }
 
-        strPseudo[lenName]='\0';
-        //printf("ligne %d: pseudo=%s Pseudo Saisi=%s \n", row, strPseudo, pseudoSaisie);
-
-        if (strcmp(pseudoSaisie, strPseudo) == 0){
-            *verif = 2;
+        if (result == MYSQL_NO_DATA){
+            printf("-- FIN --\n");
             break;
         }
 
-        if (result != 0 && row != 0){
-            *verif = 1;
-            break;
-        }
+        strTitre[lenTitre]='\0';
+        strDescription[lenDescriptionn]='\0';
+        strContent[lenContent]='\0';
+
+        printf("ligne %d: titre=%s Description=%s lencontenu=%s \n", row, strTitre, strDescription, strContent);
+
+
         row++;
 
     }

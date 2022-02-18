@@ -129,29 +129,29 @@ cTion/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cTion.dir/build.make CMakeFiles/cTion.dir/build
 .PHONY : cTion/fast
 
-main.o: main.c.o
-.PHONY : main.o
+test.o: test.c.o
+.PHONY : test.o
 
 # target to build an object file
-main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cTion.dir/build.make CMakeFiles/cTion.dir/main.c.o
-.PHONY : main.c.o
+test.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cTion.dir/build.make CMakeFiles/cTion.dir/test.c.o
+.PHONY : test.c.o
 
-main.i: main.c.i
-.PHONY : main.i
+test.i: test.c.i
+.PHONY : test.i
 
 # target to preprocess a source file
-main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cTion.dir/build.make CMakeFiles/cTion.dir/main.c.i
-.PHONY : main.c.i
+test.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cTion.dir/build.make CMakeFiles/cTion.dir/test.c.i
+.PHONY : test.c.i
 
-main.s: main.c.s
-.PHONY : main.s
+test.s: test.c.s
+.PHONY : test.s
 
 # target to generate assembly for a file
-main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cTion.dir/build.make CMakeFiles/cTion.dir/main.c.s
-.PHONY : main.c.s
+test.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cTion.dir/build.make CMakeFiles/cTion.dir/test.c.s
+.PHONY : test.c.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... cTion"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... test.o"
+	@echo "... test.i"
+	@echo "... test.s"
 .PHONY : help
 
 

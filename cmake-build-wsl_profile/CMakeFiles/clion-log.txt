@@ -1,7 +1,4 @@
 C:\Windows\system32\wsl.exe --distribution Ubuntu --exec /bin/bash -c "export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-wsl_profile && /home/kbod/cmake-3.21.1/bin/cmake -DCMAKE_BUILD_TYPE=Release -G 'CodeBlocks - Unix Makefiles' /mnt/c/Users/Keiss/CLionProjects/cTion"
--- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.1") 
--- Checking for module 'gtk+-3.0'
---   Found gtk+-3.0, version 3.24.20
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-wsl_profile
