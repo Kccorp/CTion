@@ -292,7 +292,7 @@ void verifUser (MYSQL *conn, char *pseudoSaisie, int *verif){
     mysql_free_result(metaData);
 }
 
-void getDoc (MYSQL *conn, char *pseudo){
+void getDoc (MYSQL *conn, char *pseudo, char ***docs, int *cpt, int check, int **taille){
     char strTitre[150];
     char strDescription[300];
     char strContent[15000];
@@ -300,8 +300,7 @@ void getDoc (MYSQL *conn, char *pseudo){
     unsigned long lenDescriptionn;
     unsigned long lenContent;
     unsigned long pseudoLen = strlen(pseudo);
-    int result;
-    int result1;
+    int result, result1;
     int row;
     unsigned int array_size = 1;
     MYSQL_BIND bind[3]; /*used to get result, not to provide parameters*/
@@ -365,8 +364,9 @@ void getDoc (MYSQL *conn, char *pseudo){
             break;
         }
 
-        if (result == MYSQL_NO_DATA){
-            printf("-- FIN --\n");
+        if (result == MYSQL_NO_DATA ){
+            if (check == 0)
+                printf("-- FIN --\n");
             break;
         }
 
@@ -374,8 +374,22 @@ void getDoc (MYSQL *conn, char *pseudo){
         strDescription[lenDescriptionn]='\0';
         strContent[lenContent]='\0';
 
-        printf("ligne %d: titre=%s Description=%s lencontenu=%s \n", row, strTitre, strDescription, strContent);
+        if (check == 0) {
+            //printf("ligne %d: titre=%s Description=%s lencontenu=%s \n", row, strTitre, strDescription, strContent);
+            *cpt = *cpt + 1;
+        }
 
+        if (check == 1) {
+            taille[row][0] = lenTitre;
+            taille[row][1] = lenDescriptionn;
+            taille[row][2] = lenContent;
+        }
+
+        if (check == 2){
+            strcpy(docs[row][0], strTitre);
+            strcpy(docs[row][1], strDescription);
+            strcpy(docs[row][2], strContent);
+        }
 
         row++;
 

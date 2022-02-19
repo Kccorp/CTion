@@ -97,6 +97,7 @@ void startConnection(MYSQL *connOld, MYSQL *connNew, int *state, char *hostDB, c
         initPrepareSql(connNew);
 }
 
+
 int main(int argc, char **argv) {
 
     int state = 0;
@@ -131,8 +132,62 @@ int main(int argc, char **argv) {
             }
             if (choice == 1){
 
-                printf("Work in progress");
+                char ***result;
+                int **taille;
+                int cpt=0, check=0, i;
 
+                MYSQL *conn2= mysql_init(NULL);
+                startConnection(conn, conn2, &state, hostDB, nameDB);
+
+                getDoc (conn2, pseudo, result, &cpt, check, taille);
+
+                if (cpt!=0) {
+                    check = 1;//variable d'étape
+
+                    //créer le premier tableau qui va stocker la taille de chaque titre, description et contenu de chaque doc de l'utilisateur
+                    taille = malloc(sizeof(int*) * cpt);
+                    for (i = 0; i < cpt; ++i) {
+                        taille[i] = malloc(sizeof(int) * cpt);
+                    }
+
+                    if (taille != NULL){
+
+                        getDoc(conn, pseudo, result, &cpt, check, taille); //rappelle la fonction pour remplire le tableau taille
+
+                        //créer les tableaux qui vont stocker les titre, description et contenu de chaque doc de l'utilisateur
+                        result = malloc(sizeof(char **) * cpt);
+                        for (i = 0; i < cpt; ++i) {
+                            result[i] = malloc(sizeof(char*) * 3);
+                            result[i][0] = malloc(sizeof(char) * taille[i][0]);
+                            result[i][1] = malloc(sizeof(char) * taille[i][1]);
+                            result[i][2] = malloc(sizeof(char) * taille[i][2]);
+                        }
+                        check=2; //variable d'étape
+
+                        if (result != NULL){
+                            getDoc(conn, pseudo, result, &cpt, check, taille); //rappelle la fonction pour remplire le tableau result
+
+                            //demande à l'utilisateur quel document afficher
+                            do {
+                                for (i = 0; i < cpt; i++) {
+                                    printf("\nDocument %d : %s / %s", i+1, result[i][0], result[i][1]);
+                                }
+                                printf("\n\nQuel document voulez-vous afficher : ");
+                                scanf("%d", &choice);
+                                vider_buffer();
+                            }while(choice>cpt || choice < 1);
+
+                            //affiche le document
+                            printf("\n\nTitre : %s", result[choice-1][0]);
+                            printf("\nDescription : %s", result[choice-1][1]);
+                            printf("\n%s\n\n", result[choice-1][2]);
+
+                        }
+                    } else {
+                        printf("pas assez de ressources");
+                        exit(1);
+                    }
+                }
             }
             else if (choice == 2){
 
@@ -140,7 +195,6 @@ int main(int argc, char **argv) {
                 printf("\nTu va créer un document\n");
                 char content[15000], titre[150], description[300];
 
-               //if (cpt>0)printf("Le contenu doit être inférieur à 20 000 caracteres");
                 askDoc(titre, content, description);
                 verifContent(titre, content, description); //averti user text trés grand
 

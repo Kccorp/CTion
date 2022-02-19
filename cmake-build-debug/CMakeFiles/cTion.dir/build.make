@@ -69,28 +69,28 @@ include CMakeFiles/cTion.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/cTion.dir/flags.make
 
-CMakeFiles/cTion.dir/test.c.o: CMakeFiles/cTion.dir/flags.make
-CMakeFiles/cTion.dir/test.c.o: ../test.c
-CMakeFiles/cTion.dir/test.c.o: CMakeFiles/cTion.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/cTion.dir/test.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/cTion.dir/test.c.o -MF CMakeFiles/cTion.dir/test.c.o.d -o CMakeFiles/cTion.dir/test.c.o -c /mnt/c/Users/Keiss/CLionProjects/cTion/test.c
+CMakeFiles/cTion.dir/main.c.o: CMakeFiles/cTion.dir/flags.make
+CMakeFiles/cTion.dir/main.c.o: ../main.c
+CMakeFiles/cTion.dir/main.c.o: CMakeFiles/cTion.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/cTion.dir/main.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/cTion.dir/main.c.o -MF CMakeFiles/cTion.dir/main.c.o.d -o CMakeFiles/cTion.dir/main.c.o -c /mnt/c/Users/Keiss/CLionProjects/cTion/main.c
 
-CMakeFiles/cTion.dir/test.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/cTion.dir/test.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Keiss/CLionProjects/cTion/test.c > CMakeFiles/cTion.dir/test.c.i
+CMakeFiles/cTion.dir/main.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/cTion.dir/main.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Keiss/CLionProjects/cTion/main.c > CMakeFiles/cTion.dir/main.c.i
 
-CMakeFiles/cTion.dir/test.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/cTion.dir/test.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Keiss/CLionProjects/cTion/test.c -o CMakeFiles/cTion.dir/test.c.s
+CMakeFiles/cTion.dir/main.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/cTion.dir/main.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Keiss/CLionProjects/cTion/main.c -o CMakeFiles/cTion.dir/main.c.s
 
 # Object files for target cTion
 cTion_OBJECTS = \
-"CMakeFiles/cTion.dir/test.c.o"
+"CMakeFiles/cTion.dir/main.c.o"
 
 # External object files for target cTion
 cTion_EXTERNAL_OBJECTS =
 
-cTion: CMakeFiles/cTion.dir/test.c.o
+cTion: CMakeFiles/cTion.dir/main.c.o
 cTion: CMakeFiles/cTion.dir/build.make
 cTion: CMakeFiles/cTion.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/c/Users/Keiss/CLionProjects/cTion/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable cTion"
