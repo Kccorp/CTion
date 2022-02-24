@@ -7,6 +7,7 @@
 #include "account.c"
 #include "graphique.c"
 #include "fileConfig.c"
+#include "scraping.c"
 
 void vider_buffer(void){
     //fflush(stdin);
