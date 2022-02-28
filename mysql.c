@@ -8,6 +8,7 @@
 #define SELECT_USER "SELECT pseudo, pwd from user"
 #define CHECK_USER "SELECT pseudo from user"
 #define GET_DOC "SELECT titre, contenu, description from document inner join possede on document.titre = possede.titreDoc inner join user on possede.pseudo = user.pseudo where user.pseudo = ?"
+#define UPDATE_DOC "UPDATE document set contenu = ? where titre = ?"
 
 MYSQL_STMT* addUser = NULL;
 MYSQL_STMT* selectUser = NULL;
@@ -15,6 +16,7 @@ MYSQL_STMT* checkUser = NULL;
 MYSQL_STMT* addDoc = NULL;
 MYSQL_STMT* addAssoc = NULL;
 MYSQL_STMT* selectDoc = NULL;
+MYSQL_STMT* updateDoc = NULL;
 
 void err_exit(char* s);
 
@@ -76,6 +78,13 @@ void initPrepareSql (MYSQL *conn){
     count = mysql_stmt_param_count(selectDoc);
     printf("Il y a %d parametre dans l'sql preparé getDoc\n", count);
 
+    updateDoc = mysql_stmt_init(conn);
+    if (updateDoc == NULL) err_exit("init stmt failed");
+    prepare = mysql_stmt_prepare(updateDoc, UPDATE_DOC, strlen(UPDATE_DOC));
+    if (prepare != 0) err_exit("prepare stmt failed");
+    count = mysql_stmt_param_count(updateDoc);
+    printf("Il y a %d parametre dans l'sql preparé updateDoc\n", count);
+
 }
 
 void insertAssoc(char *titre, char *pseudo){
@@ -102,6 +111,34 @@ void insertAssoc(char *titre, char *pseudo){
     result = mysql_stmt_bind_param(addAssoc, bind);
     if (result != 0) err_exit("bind stmt insert failed");
     result = mysql_stmt_execute(addAssoc);
+    if (result != 0) err_exit("execute stmt insert failed");
+}
+
+void UpdateDocument(char *content){
+    MYSQL_BIND bind[2];
+
+    char titre[15]="Top steam";
+    unsigned int array_size = 1; // the number of row to insert?
+    unsigned long titreLen = strlen(titre);
+    unsigned long contentLen = strlen(content);
+    int result;
+
+    memset(bind, 0, sizeof(MYSQL_BIND)*2);
+
+    bind[0].buffer_type = MYSQL_TYPE_STRING;
+    bind[0].buffer = content;
+    bind[0].buffer_length = strlen(content);
+    bind[0].length = &contentLen;
+
+    bind[1].buffer_type = MYSQL_TYPE_STRING;
+    bind[1].buffer = titre;
+    bind[1].buffer_length = strlen(titre);
+    bind[1].length = &titreLen;
+
+    mysql_stmt_attr_set(updateDoc, 2, &array_size);
+    result = mysql_stmt_bind_param(updateDoc, bind);
+    if (result != 0) err_exit("bind stmt insert failed");
+    result = mysql_stmt_execute(updateDoc);
     if (result != 0) err_exit("execute stmt insert failed");
 }
 
@@ -405,6 +442,10 @@ void closePreparedStatements(){
     mysql_stmt_close(selectUser);
     mysql_stmt_close(checkUser);
     mysql_stmt_close(addDoc);
+    mysql_stmt_close(addAssoc);
+    mysql_stmt_close(selectDoc);
+    mysql_stmt_close(updateDoc);
+
 }
 
 void closeDb(MYSQL* dbconn){

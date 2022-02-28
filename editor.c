@@ -111,10 +111,6 @@ void parse (char* src){
 
     if (max < 10)max=10;
 
-    //printf("\nnbr mots : %d", cptWord);
-    //printf("\nmaxlength : %d", max);
-
-
     cptWord++;
     max++;
     char **result = malloc(cptWord * sizeof(char*));
@@ -136,12 +132,12 @@ void parse (char* src){
         int color = 0;
         analyse(result, color, cptWord);
 
-        //Affichage du tableau 2D
+        /*//Affichage du tableau 2D
         for ( i = 0; i < cptWord; ++i) {
             if (result[i][0] != 0){
                 printf("\n%s", result[i]);
             }
-        }
+        }*/
 
         //reconstitution de la phrase
         int last;
@@ -164,35 +160,4 @@ void parse (char* src){
     } else{
         printf("pas assez de ressources");
     }
-
-
-
-
-   // split(size, src, result);
-
-/*
-    int color = 0;
-    analyse(result, color, cptWord);
-
-
-    //Affichage du tableau 2D
-    for ( i = 0; i < cptWord; ++i) {
-        if (result[i][0] != 0){
-            printf("\n%s", result[i]);
-        }
-    }
-
-    printf("\n-------------------");
-
-    int last;
-    for ( i = 0; i < cptWord; ++i) {
-        if (result[i][0] != 0){
-            strcat(final,result[i]);
-            last = strlen(final);
-            final[last] = 32;
-        }
-    }
-
-    printf("\n la phrase est : %s", final);
-*/
 }

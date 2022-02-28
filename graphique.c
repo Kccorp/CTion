@@ -61,12 +61,9 @@ void newUser(GtkWidget *widget, gpointer user_data){
     }
 }
 
-void closeWindow( GtkWidget *widget, gpointer user_data)
-{
+void closeWindow( GtkWidget *widget, gpointer user_data){
     gtk_main_quit();
     g_application_quit(user_data);
-
-
 }
 
 

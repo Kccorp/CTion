@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mysql/mysql.h>
+#include <curl/curl.h>
 #include "mysql.c"
 #include "editor.c"
 #include "account.c"
@@ -9,13 +10,20 @@
 #include "fileConfig.c"
 #include "scraping.c"
 
+void vider_buffer(void);
+void remove_n(char *chaine, int size);
+void askDoc (char *titre, char *content, char *description);
+void verifContent(char *titre, char * content, char *description);
+void connectUser (int *connected, MYSQL *conn, int argc, char **argv, char *pseudo, char *window_size_x, char *window_size_y);
+void startConnection(MYSQL *connOld, MYSQL *connNew, int *state, char *hostDB, char *nameDB);
+void downloadDoc (char *titre, char *description, char *content);
+void createDocFile (char *titre, char *descriptiob, char *content, char *docFile);
+
 void vider_buffer(void){
-    //fflush(stdin);
     int c;
     do {
         c = getchar();
     } while (c != '\n' && c != EOF);
-
 }
 
 void remove_n(char *chaine, int size){
@@ -82,6 +90,7 @@ void connectUser (int *connected, MYSQL *conn, int argc, char **argv, char *pseu
         //fait l'injection dans la db
         insertUser(pseudo, pwd);
         *connected = 1;
+        insertAssoc("Top steam", pseudo);
         printf("\nInscription validée - vous êtes connecté\n");
 
     } else if (choice == 3) {
@@ -98,6 +107,66 @@ void startConnection(MYSQL *connOld, MYSQL *connNew, int *state, char *hostDB, c
         initPrepareSql(connNew);
 }
 
+void downloadDoc (char *titre, char *description, char *content){
+    char check[5];
+    do {
+        printf("\n\nVoulez-vous téléchargé votre document ? (y/n)");
+        fgets(check, 2, stdin);
+    } while (strcmp(check, "y")!=0 && strcmp(check, "Y")!=0 && strcmp(check, "n")!=0 && strcmp(check, "N")!=0);
+
+    if (strcmp(check, "y")==0 || strcmp(check, "Y")==0){
+        int lenDoc, sizeDoc;
+        char filename[160] = "../";
+        //char docFile[15450]={0};
+
+        strcat(filename, titre);
+        strcat(filename, ".txt");
+
+        lenDoc = strlen(titre) + strlen(description) + strlen(content);
+        sizeDoc = sizeof(titre) + sizeof(description) + sizeof(content);
+
+        char *docFile = malloc(lenDoc * sizeof(char));
+
+        for ( int i = 0; i < lenDoc; ++i) {
+            docFile[i] = '0';
+            printf("\n 0");
+        }
+
+        createDocFile(titre, description, content, docFile);
+
+        printf("la len %d", strlen(content));
+        printf("la size %d", sizeof(content));
+
+        FILE *fp = fopen(filename, "w");
+        if (fp == NULL) {
+            printf("Erreur: Impossible d'ouvrir le fichier %s", "../resultat.txt");
+            exit(1);
+        }
+
+        //fwrite(content, 1, strlen(content), fp);
+        //fwrite(docFile, 1, lenDoc, fp);
+        fputs(docFile, fp);
+        //printf("%s", docFile);
+
+        // fermer le fichier
+        if (fclose(fp)!=0) {
+            printf("fichier non fermé");
+        }
+
+        free(docFile);
+
+    }
+}
+
+void createDocFile (char *titre, char *description, char *content, char *docFile){
+    strcpy(docFile, "Titre : ");
+    strcat(docFile, titre);
+    strcat(docFile, "\nDescription : ");
+    strcat(docFile, description);
+    strcat(docFile, "\n");
+    strcat(docFile, content);
+    strcat(docFile, "---FIN---");
+}
 
 int main(int argc, char **argv) {
 
@@ -140,7 +209,7 @@ int main(int argc, char **argv) {
                 MYSQL *conn2= mysql_init(NULL);
                 startConnection(conn, conn2, &state, hostDB, nameDB);
 
-                getDoc (conn2, pseudo, result, &cpt, check, taille);
+                getDoc (conn2, pseudo, result, &cpt, check, taille);//releve le nbr de doc pour le user
 
                 if (cpt!=0) {
                     check = 1;//variable d'étape
@@ -173,16 +242,50 @@ int main(int argc, char **argv) {
                                 for (i = 0; i < cpt; i++) {
                                     printf("\nDocument %d : %s / %s", i+1, result[i][0], result[i][1]);
                                 }
-                                printf("\n\nQuel document voulez-vous afficher : ");
+                                printf("\n\nQuel document voulez-vous afficher (entrez le numéro) : ");
                                 scanf("%d", &choice);
                                 vider_buffer();
                             }while(choice>cpt || choice < 1);
 
-                            //affiche le document
-                            printf("\n\nTitre : %s", result[choice-1][0]);
-                            printf("\nDescription : %s", result[choice-1][1]);
-                            printf("\n%s\n\n", result[choice-1][2]);
+                            if (strcmp(result[choice-1][0], "Top steam")==0){
 
+                                char newContent[256];
+                                scrap(newContent);
+
+                                UpdateDocument(newContent);
+
+                                getDoc(conn, pseudo, result, &cpt, check, taille);
+
+                                printf("\n\nTitre : %s", result[choice-1][0]);
+                                printf("\nDescription : %s", result[choice-1][1]);
+                                printf("\n%s\n\n", result[choice-1][2]);
+
+                                //Tellechargement du fichier
+                                downloadDoc(result[choice-1][0], result[choice-1][1], result[choice-1][2]);
+
+                            } else {
+                                //affiche le document
+                                printf("\n\nTitre : %s", result[choice-1][0]);
+                                printf("\nDescription : %s", result[choice-1][1]);
+                                printf("\n%s\n\n", result[choice-1][2]);
+
+                                //Tellechargement du fichier
+                                downloadDoc(result[choice-1][0], result[choice-1][1], result[choice-1][2]);
+                            }
+
+                            //libère le tableau taille
+                            for ( i = 0; i < cpt; ++i) {
+                                free(taille[i]);
+                            }
+                            free(taille);
+
+                            //libère le tableau result
+                            for (i = 0; i < cpt; ++i) {
+                                for (int j = 0; j < 3; ++j) {
+                                    free(result[i][j]);
+                                }
+                            }
+                            free(result);
                         }
                     } else {
                         printf("pas assez de ressources");
